@@ -1,4 +1,4 @@
-import { CalculateTxCostReturn, CreateWalletReturn, GetWalletBalanceReturn, SendTxReturn } from "./types/return"
+import { CalculateTxCostReturn, CreateWalletReturn, SendTxReturn } from "./types/return"
 
 /**
  * The purpose of the BlockchainClient interface is to abstract the blockchain-specific library or implementation
@@ -6,8 +6,8 @@ import { CalculateTxCostReturn, CreateWalletReturn, GetWalletBalanceReturn, Send
  */
 export interface BlockchainClient {
     createWallet(): Promise<CreateWalletReturn>
-    getWalletBalance(): Promise<GetWalletBalanceReturn>
-    sendTx(): Promise<SendTxReturn>
+    getWalletBalance(publicKeyStr: string): Promise<number>
+    sendTx(fromPubkeyStr: string, toPubkeyStr: string, amt: number): Promise<SendTxReturn>
     calculateTxCost(): Promise<CalculateTxCostReturn>
 }
 

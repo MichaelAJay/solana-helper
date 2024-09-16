@@ -1,1 +1,3 @@
-export type CreateWalletReturn = {}
+export type CreateWalletReturn = {
+    success: true
+}

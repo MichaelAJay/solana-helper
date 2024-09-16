@@ -1,1 +1,3 @@
-export type SendTxReturn = {}
+export type SendTxReturn = {
+    success: true
+}

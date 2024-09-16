@@ -1,10 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, Post } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { BlockchainClientService } from './blockchain-client/blockchain-client.service';
+import { BlockchainClientModule } from './blockchain-client/blockchain-client.module';
 
 @Module({
-  imports: [],
+  imports: [BlockchainClientModule],
   controllers: [AppController],
-  providers: [BlockchainClientService],
 })
 export class AppModule {}

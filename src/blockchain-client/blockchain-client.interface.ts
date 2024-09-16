@@ -1,0 +1,24 @@
+import { CalculateTxCostReturn, CreateWalletReturn, GetWalletBalanceReturn, SendTxReturn } from "./types/return"
+
+/**
+ * The purpose of the BlockchainClient interface is to abstract the blockchain-specific library or implementation
+ * of common blockchain-related activities
+ */
+export interface BlockchainClient {
+    createWallet(): Promise<CreateWalletReturn>
+    getWalletBalance(): Promise<GetWalletBalanceReturn>
+    sendTx(): Promise<SendTxReturn>
+    calculateTxCost(): Promise<CalculateTxCostReturn>
+}
+
+/**
+ * Implement:
+ * Create wallet
+ * Verify keypair (?)
+ * Validate public key (?)
+ * Generate mnemonics
+ * Restore keypair from mnemonic
+ * How to send
+ * Calculate tx cost
+ * Create account (this may be a specific Solana thing)
+ */

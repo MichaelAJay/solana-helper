@@ -3,12 +3,12 @@ import { PrismaService } from './prisma.service';
 import { Keypair } from '@solana/web3.js';
 
 @Injectable()
-export class WalletDbHandlerService {
+export class AccountDbHandlerService {
 
     constructor(private readonly prismaService: PrismaService) {};
 
-    async createWallet(wallet: Keypair, label?: string) {
-        await this.prismaService.wallet.create({
+    async createAccount(wallet: Keypair, label?: string) {
+        await this.prismaService.account.create({
             data: {
                 publicKey: wallet.publicKey.toString(),
                 privateKey: Buffer.from(wallet.secretKey).toString('hex'),
@@ -17,25 +17,17 @@ export class WalletDbHandlerService {
         })
     };
 
-    async retrieveWallet(publicKey: string) {
-        return await this.prismaService.wallet.findUniqueOrThrow({
+    async retrieveAccount(publicKey: string) {
+        return await this.prismaService.account.findUniqueOrThrow({
             where: { publicKey }
         })
     }
 
-    async listWallets(isSafe: boolean) {
-
-        // select: {
-        //     publicKey: true,
-        //     privateKey: isSafe,
-        //     label: true,
-        //     createdAt: true,
-        //     updatedAt: true
-        // }
+    async listAccounts(isSafe: boolean) {
         /**
          * Consider pagination
          */
-        return await this.prismaService.wallet.findMany({
+        return await this.prismaService.account.findMany({
             select: {
                 publicKey: true,
                 privateKey: !isSafe,

@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Wallet {
+model Account {
   publicKey String @id
   privateKey String
   label String?

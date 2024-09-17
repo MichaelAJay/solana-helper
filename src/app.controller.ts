@@ -16,7 +16,7 @@ export class AppController {
   @Post('wallet')
   async createWallet(@Body() body: CreateWalletDto) {
     const { label } = body;
-    return this.blockchainClientService.createWallet(label);
+    return this.blockchainClientService.createAccount(label);
   }
 
   @Get('wallet-list')
@@ -24,12 +24,12 @@ export class AppController {
     const { is_safe } = query;
     // @ts-ignore
     const isSafe = !(is_safe && is_safe === 'false');
-    return this.blockchainClientService.listWallets(isSafe);
+    return this.blockchainClientService.listAccounts(isSafe);
   }
 
   @Get('wallet/:id/balance')
   async getWalletBalance(@Param('id') walletId: string) {
-    return this.blockchainClientService.getWalletBalance(walletId);
+    return this.blockchainClientService.getAccountBalance(walletId);
   }
 
   @Post('wallet/airdrop/:id')
@@ -37,7 +37,7 @@ export class AppController {
     @Param('id') walletId: string,
     @Body() body: AirdropToWalletDto,
   ) {
-    return this.blockchainClientService.airdropToWallet(walletId, body.amt);
+    return this.blockchainClientService.airdropToAccount(walletId, body.amt);
   }
 
   @Post('send-tx')

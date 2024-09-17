@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { WalletDbHandlerService } from './wallet-db-handler.service';
+import { AccountDbHandlerService } from './account-db-handler.service';
 import { PrismaService } from './prisma.service';
 
 @Module({
-  providers: [PrismaService, WalletDbHandlerService],
-  exports: [WalletDbHandlerService]
+  providers: [PrismaService, AccountDbHandlerService],
+  exports: [AccountDbHandlerService]
 })
 export class DbHandlersModule {}

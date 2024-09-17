@@ -8,10 +8,14 @@ export class AccountDbHandlerService {
     constructor(private readonly prismaService: PrismaService) {};
 
     async createAccount(wallet: Keypair, label?: string) {
-        await this.prismaService.account.create({
+        if (label === 'SYSTEM') {
+            throw new Error('SYSTEM is a reserved label');
+        }
+
+        return await this.prismaService.account.create({
             data: {
                 publicKey: wallet.publicKey.toString(),
-                privateKey: Buffer.from(wallet.secretKey).toString('hex'),
+                secretKey: Buffer.from(wallet.secretKey).toString('hex'),
                 label
             }
         })
@@ -30,7 +34,7 @@ export class AccountDbHandlerService {
         return await this.prismaService.account.findMany({
             select: {
                 publicKey: true,
-                privateKey: !isSafe,
+                secretKey: !isSafe,
                 label: true,
                 createdAt: true,
                 updatedAt: true

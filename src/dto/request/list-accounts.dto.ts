@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional } from 'class-validator';
 
-export class ListWalletsDto {
+export class ListAccountsDto {
   @IsBoolean()
   @IsOptional()
   @Transform(({ value }) => value !== 'false')

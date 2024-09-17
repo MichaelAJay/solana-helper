@@ -5,8 +5,8 @@ import { CalculateTxCostReturn, CreateAccountReturn, SendTxReturn } from "./type
  * of common blockchain-related activities
  */
 export interface BlockchainClient {
-    createAccount(): Promise<CreateAccountReturn>
-    getAccountBalance(publicKeyStr: string): Promise<number>
+    createAccount(amt: number, label?: string): Promise<CreateAccountReturn>
+    getAccountBalance(publicKeyStr: string, getBaseUnit: boolean): Promise<number>
     sendTx(fromPubkeyStr: string, toPubkeyStr: string, amt: number): Promise<SendTxReturn>
     calculateTxCost(): Promise<CalculateTxCostReturn>
 }

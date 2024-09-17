@@ -4,13 +4,13 @@ import * as bip39 from 'bip39';
 
 @Injectable()
 export class BlockchainClientUtilityService {
-    restoreKeypair(privateKeyHex: string): Keypair {
-        const secretKey = this.hexStringToUint8Array(privateKeyHex);
+    restoreKeypair(secretKeyHex: string): Keypair {
+        const secretKey = this.hexStringToUint8Array(secretKeyHex);
         return Keypair.fromSecretKey(secretKey);
     };
-    verifyKeypair(publicKeyStr: string, privateKeyHex: string): boolean {
-        const publicKey = this.publicKeyFromString(publicKeyStr);
-        const keypair = this.restoreKeypair(privateKeyHex);
+    verifyKeypair(publicKeyStr: string, secretKeyHex: string): boolean {
+        const publicKey = this.generatePublicKey(publicKeyStr);
+        const keypair = this.restoreKeypair(secretKeyHex);
         return keypair.publicKey.toBase58() === publicKey.toBase58();
     };
     generateMnemonicsForKeypair() {
@@ -29,8 +29,8 @@ export class BlockchainClientUtilityService {
     };
 
     // Helpers
-    publicKeyFromString(publicKeyStr: string): PublicKey {
-        return new PublicKey(publicKeyStr);
+    generatePublicKey(input: string | PublicKey): PublicKey {
+        return typeof input === 'string' ? new PublicKey(input) : input;
     }
     hexStringToUint8Array(hexString: string): Uint8Array {
         return new Uint8Array(Buffer.from(hexString, 'hex'));

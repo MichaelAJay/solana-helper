@@ -22,7 +22,8 @@ export class AppController {
   @Get('wallet-list')
   async getWalletList(@Query() query: ListWalletsDto) {
     const { is_safe } = query;
-    const isSafe = typeof is_safe === 'undefined' || is_safe;
+    // @ts-ignore
+    const isSafe = !(is_safe && is_safe === 'false');
     return this.blockchainClientService.listWallets(isSafe);
   }
 

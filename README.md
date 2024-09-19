@@ -13,6 +13,15 @@ init.sh
 Now create at least one model in prisma/schema.prisma.
 https://www.prisma.io/docs/orm/prisma-schema/data-model/models
 
+For solana-helper, add this model:
+model Account {
+  publicKey String @id
+  secretKey String
+  label String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
 Whenever you make changes to your schema, run:
 npx prisma generate
 npx prisma db push

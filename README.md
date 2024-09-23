@@ -22,6 +22,8 @@ model Account {
 
   secretKey String
 
+  environment String
+
   label String?
 
   createdAt DateTime @default(now())
@@ -83,3 +85,11 @@ In `app.controller.ts`, each method has a route decorator, like `@Post('<route>'
 A decorator in the method parameters like `@Body()` or `@Query()` can specify a defined type (actually, a concrete class).
 
 `class-validator` decorators may be used to both validate incoming requests AND to generate Swagger documentation.
+
+*** CREATING THE FIRST WALLET FOR DEVNET ***
+This wallet will be used to sign transactions to create additional accounts in the application.
+1) Start the Solana container from the docker compose file. First, remove the command line.
+2) docker exec into the container and open the file at root/.config/solana/id.json (using Docker Desktop makes this very easy)
+3) Use the solana-sandbox repository tool to output your keypair (https://github.com/MichaelAJay/solana-sandbox)
+4) Start Prisma Studio: npx prisma studio
+5) Navigate to the "Account" table & add a record with the output from step 3, as well as label "SYSTEM" & environment "DEV"

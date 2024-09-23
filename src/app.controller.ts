@@ -1,10 +1,27 @@
-import { Body, Controller, Delete, Get, NotImplementedException, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotImplementedException,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { BlockchainClientService } from './blockchain-client/blockchain-client.service';
-import { CreateAccountDto, GetAccountBalanceDto, ListAccountsDto, SendTxDto } from './dto/request';
-import { ApiCreatedResponse, ApiNotImplementedResponse, ApiServiceUnavailableResponse } from '@nestjs/swagger';
+import {
+  CreateAccountDto,
+  GetAccountBalanceDto,
+  ListAccountsDto,
+  SendTxDto,
+} from './dto/request';
+import {
+  ApiCreatedResponse,
+  ApiNotImplementedResponse,
+  ApiServiceUnavailableResponse,
+} from '@nestjs/swagger';
 import { CreateAccountResponseDto } from './dto/response';
 import { BlockchainNodeUnavailableApiResponseOptions } from './api-documentation/response-error-options';
-
 
 @Controller()
 export class AppController {
@@ -17,9 +34,12 @@ export class AppController {
   @Post('account')
   async createAccount(@Body() body: CreateAccountDto) {
     const { amt, label } = body;
-    // Default to 10 SOL
-    const DEFAULT_SOL = 10;
-    return this.blockchainClientService.createAccount(amt || DEFAULT_SOL, label);
+    // Default to 2 SOL
+    const DEFAULT_SOL = 2;
+    return this.blockchainClientService.createAccount(
+      amt || DEFAULT_SOL,
+      label,
+    );
   }
 
   @Get('account-list')
@@ -31,11 +51,17 @@ export class AppController {
   }
 
   @Get('account/:id/balance')
-  async getAccountBalance(@Param('id') accountId: string, @Query() query: GetAccountBalanceDto) {
+  async getAccountBalance(
+    @Param('id') accountId: string,
+    @Query() query: GetAccountBalanceDto,
+  ) {
     const { in_base_unit } = query;
     // @ts-ignore
     const getBaseUnit = !(in_base_unit && in_base_unit === 'false');
-    return this.blockchainClientService.getAccountBalance(accountId, getBaseUnit);
+    return this.blockchainClientService.getAccountBalance(
+      accountId,
+      getBaseUnit,
+    );
   }
 
   @Post('send-tx')

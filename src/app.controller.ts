@@ -66,13 +66,23 @@ export class AppController {
 
   @Post('send-tx')
   async sendTx(@Body() body: SendTxDto) {
-    const { fromPubkeyStr, toPubkeyStr, amt } = body;
-    return this.blockchainClientService.sendTx(fromPubkeyStr, toPubkeyStr, amt);
+    const { fromPubkeyStr, toPubkeyStr, amt, invoiceId } = body;
+    return this.blockchainClientService.sendTx(
+      fromPubkeyStr,
+      toPubkeyStr,
+      amt,
+      invoiceId,
+    );
   }
 
   @Delete('account/:id')
   @ApiNotImplementedResponse()
   async closeAccount(@Param('id') accountId: string) {
     throw new NotImplementedException();
+  }
+
+  @Get('tx/:signature')
+  async getTx(@Param('signature') signature: string) {
+    return this.blockchainClientService.getTx(signature);
   }
 }

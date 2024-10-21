@@ -13,11 +13,13 @@ import {
   sendAndConfirmTransaction,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
 } from '@solana/web3.js';
 import { AccountDbHandlerService } from 'src/db-handlers/account-db-handler.service';
 import { BlockchainClientUtilityService } from './blockchain-client-utility.service';
 import { ConfigService } from '@nestjs/config';
 import { AccountEnvironment, ACCOUNT_ENVIRONMENT } from './constants';
+import bs58 from 'bs58';
 
 type VALID_ENVIRONMENT_URLS =
   | 'http://localhost:8899'
@@ -31,6 +33,7 @@ const ENVIRONMENT_URLS: Record<VALID_ENVIRONMENT_URLS, AccountEnvironment> = {
 export class BlockchainClientService implements BlockchainClient, OnModuleInit {
   private connection: Connection;
   private environment: AccountEnvironment;
+  private memoPublicKey: PublicKey;
 
   constructor(
     private readonly accountDbHandler: AccountDbHandlerService,
@@ -55,6 +58,10 @@ export class BlockchainClientService implements BlockchainClient, OnModuleInit {
     this.connection = new Connection(connectionURL, 'confirmed');
     this.environment =
       ENVIRONMENT_URLS[connectionURL as keyof typeof ENVIRONMENT_URLS];
+
+    this.memoPublicKey = new PublicKey(
+      'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr',
+    );
   }
 
   async onModuleInit() {
@@ -184,6 +191,7 @@ export class BlockchainClientService implements BlockchainClient, OnModuleInit {
     fromPubkeyStr: string,
     toPubkeyInput: string | PublicKey,
     amt: number,
+    invoiceId?: string,
   ): Promise<SendTxReturn> {
     try {
       const toPubkey = this.utilService.generatePublicKey(toPubkeyInput);
@@ -199,6 +207,22 @@ export class BlockchainClientService implements BlockchainClient, OnModuleInit {
         }),
       );
 
+      if (invoiceId) {
+        transferTransaction.add(
+          new TransactionInstruction({
+            keys: [
+              {
+                pubkey: fromKeypair.publicKey,
+                isSigner: true,
+                isWritable: true,
+              },
+            ],
+            data: Buffer.from(invoiceId, 'utf-8'),
+            programId: this.memoPublicKey,
+          }),
+        );
+      }
+
       await sendAndConfirmTransaction(this.connection, transferTransaction, [
         fromKeypair,
       ]);
@@ -210,5 +234,50 @@ export class BlockchainClientService implements BlockchainClient, OnModuleInit {
   }
   async calculateTxCost(): Promise<CalculateTxCostReturn> {
     throw new Error('Method not implemented.');
+  }
+  async getTx(signature: string) {
+    // @ts-ignore
+    function decodeMemoData(encodedData) {
+      console.log('Encoded data:', encodedData);
+      const decodedArray = bs58.decode(encodedData);
+      console.log('Decoded array:', decodedArray);
+      const buffer = Buffer.from(decodedArray);
+      console.log('Buffer:', buffer);
+      const decodedString = buffer.toString('utf-8');
+      console.log('Decoded string:', decodedString);
+      return decodedString;
+    }
+
+    try {
+      const parsedTx = await this.connection.getParsedTransaction(signature, {
+        maxSupportedTransactionVersion: 0,
+      });
+
+      if (!parsedTx) {
+        throw new Error('no tx');
+      }
+
+      // parsedTx.transaction.message.instructions[1].parsed
+      const { instructions } = parsedTx.transaction.message;
+      const memos = instructions.reduce((acc, cur) => {
+        if (
+          cur.programId.equals(this.memoPublicKey) &&
+          typeof cur === 'object' &&
+          cur !== null
+        ) {
+          if (
+            cur.hasOwnProperty('parsed') &&
+            typeof (cur as { parsed: string }).parsed === 'string'
+          ) {
+            acc.push((cur as { parsed: string }).parsed);
+          }
+        }
+        return acc;
+      }, [] as string[]);
+
+      return { parsedTx, memos };
+    } catch (err) {
+      throw err;
+    }
   }
 }
